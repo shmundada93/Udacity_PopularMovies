@@ -2,10 +2,7 @@ package com.example.www.popularmovies;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -16,22 +13,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.www.popularmovies.Adapter.MovieAdapter;
-import com.example.www.popularmovies.Model.Movie;
+import com.example.www.popularmovies.Model.MovieData;
+import com.example.www.popularmovies.Model.MovieList;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * A list fragment representing a list of Movies. This fragment
@@ -72,7 +65,7 @@ public class MovieListFragment extends Fragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(Movie movie);
+        public void onItemSelected(MovieData movie);
     }
 
     /**
@@ -81,16 +74,20 @@ public class MovieListFragment extends Fragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(Movie movie) {
+        public void onItemSelected(MovieData movie) {
         }
     };
 
 
     private final String MOVIEDB_KEY = "25957923c5900525a6fcd8bd091e0dbb";
     MovieAdapter movieAdapter;
-    ArrayList<Movie> movieList = new ArrayList<>();
+    ArrayList<MovieData> movieList = new ArrayList<>();
     GridView gridView;
     private ProgressDialog mProgresDialog;
+    public static final String BASE_URL = "http://api.themoviedb.org";
+    private Retrofit retrofit;
+    private MoviedbAPI moviedbAPI;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -120,6 +117,11 @@ public class MovieListFragment extends Fragment {
                 mCallbacks.onItemSelected(movieList.get(i));
             }
         });
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        moviedbAPI = retrofit.create(MoviedbAPI.class);
         return rootView;
     }
 
@@ -187,12 +189,30 @@ public class MovieListFragment extends Fragment {
 
 
     private void updateMovie() {
-        FetchMovieTask movieTask = new FetchMovieTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortPref = prefs.getString(getString(R.string.pref_sort),
                 getString(R.string.pref_sort_default));
         mProgresDialog.show();
-        movieTask.execute(sortPref);
+        Call<MovieList> call = moviedbAPI.getMovies(sortPref,2);
+        Log.d("MOVIE_APP", call.toString());
+        call.enqueue(new Callback<MovieList>() {
+
+            @Override
+            public void onResponse(Response<MovieList> response, Retrofit retrofit) {
+                MovieList allMovies = response.body();
+                Log.d("MOVIE_APP", response.toString());
+                Log.d("MOVIE_APP", allMovies.getResults().get(0).getTitle());
+                mProgresDialog.dismiss();
+                movieList.clear();
+                movieList.addAll(allMovies.getResults());
+                movieAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
     }
 
     @Override
@@ -201,140 +221,4 @@ public class MovieListFragment extends Fragment {
         updateMovie();
     }
 
-
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
-
-        private final String LOG_TAG = "MOVIE_APP";
-
-        private ArrayList<Movie> getMovieDataFromJson(String movieJsonStr)
-                throws JSONException {
-
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray("results");
-            ArrayList<Movie> resultStrs = new ArrayList<>();
-
-            for (int i = 0; i < movieArray.length(); i++) {
-
-                Movie nMovie = new Movie();
-                JSONObject movieData = movieArray.getJSONObject(i);
-                Log.d(LOG_TAG,movieData.toString());
-
-                nMovie.setTitle(movieData.getString("title"));
-                nMovie.setOverview(movieData.getString("overview"));
-                nMovie.setReleaseDate(movieData.getString("release_date"));
-                nMovie.setPosterPath(movieData.getString("poster_path"));
-                nMovie.setPopularity((float) movieData.getDouble("popularity"));
-                nMovie.setVoteAverage((float) movieData.getDouble("vote_average"));
-                nMovie.setVoteCount(movieData.getInt("vote_count"));
-                resultStrs.add(nMovie);
-            }
-            return resultStrs;
-
-        }
-
-
-        @Override
-        protected ArrayList<Movie> doInBackground(String... params) {
-
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-
-            try {
-                final String MOVIEDB_BASE_URL =
-                        "http://api.themoviedb.org/3/discover/movie?";
-                final String SORT_PARAM = "sort_by";
-                final String APIKEY_PARAM = "api_key";
-
-                Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
-                        .appendQueryParameter(SORT_PARAM, params[0])
-                        .appendQueryParameter(APIKEY_PARAM, MOVIEDB_KEY)
-                        .build();
-
-                Log.d(LOG_TAG, builtUri.toString());
-                URL url = new URL(builtUri.toString());
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                movieJsonStr = buffer.toString();
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                Context context = getActivity();
-                CharSequence text = "Network Error!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-                return null;
-            } finally {
-                mProgresDialog.dismiss();
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-
-            try {
-                return getMovieDataFromJson(movieJsonStr);
-
-            } catch (JSONException e) {
-                Context context = getActivity();
-                CharSequence text = "JSON Parsing Exception!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-
-            // This will only happen if there was an error getting or parsing the forecast.
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> result) {
-            if (result != null) {
-                mProgresDialog.dismiss();
-                Log.d(LOG_TAG,result.toString());
-                movieList.clear();
-                movieList.addAll(result);
-                movieAdapter.notifyDataSetChanged();
-            }
-        }
-    }
 }

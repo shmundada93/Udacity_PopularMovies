@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.www.popularmovies.Model.Movie;
+import com.example.www.popularmovies.Model.MovieData;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -29,7 +29,7 @@ public class MovieDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM = "movie_data";
-    private Movie movieData;
+    private MovieData movieData;
     @Bind(R.id.movie_title)
     TextView movieTitle;
     @Bind(R.id.movie_release_date)
@@ -55,7 +55,7 @@ public class MovieDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            movieData = (Movie) getArguments().getSerializable(ARG_ITEM);
+            movieData = (MovieData) getArguments().getSerializable(ARG_ITEM);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);

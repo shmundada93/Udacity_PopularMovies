@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.www.popularmovies.Model.Movie;
+import com.example.www.popularmovies.Model.MovieData;
 
 
 /**
@@ -87,7 +87,7 @@ public class MovieListActivity extends AppCompatActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(Movie movie) {
+    public void onItemSelected(MovieData movie) {
         Bundle arguments = new Bundle();
         arguments.putSerializable(MovieDetailFragment.ARG_ITEM ,movie);
         if (mTwoPane) {
