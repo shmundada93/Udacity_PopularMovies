@@ -1,59 +1,90 @@
-package com.example.www.popularmovies.Model;
+package com.example.www.popularmovies;
 
+import com.example.www.popularmovies.Model.MovieDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Generated;
+@Table(database = MovieDB.class)
+public class MovieData extends BaseModel implements Serializable {
 
-@Generated("org.jsonschema2pojo")
-public class MovieData implements Serializable{
-
-    @SerializedName("poster_path")
-    @Expose
-    private String posterPath;
-    @SerializedName("adult")
-    @Expose
-    private Boolean adult;
-    @SerializedName("overview")
-    @Expose
-    private String overview;
-    @SerializedName("release_date")
-    @Expose
-    private String releaseDate;
-    @SerializedName("genre_ids")
-    @Expose
-    private List<Integer> genreIds = new ArrayList<Integer>();
+    @Column
+    @PrimaryKey
     @SerializedName("id")
     @Expose
-    private Integer id;
+    public Integer id;
+
+    @Column
+    @SerializedName("poster_path")
+    @Expose
+    public String posterPath;
+
+    @Column
+    @SerializedName("adult")
+    @Expose
+    public Boolean adult;
+
+    @Column
+    @SerializedName("overview")
+    @Expose
+    public String overview;
+
+    @Column
+    @SerializedName("release_date")
+    @Expose
+    public String releaseDate;
+
+
+    @SerializedName("genre_ids")
+    @Expose
+    public List<Integer> genreIds = new ArrayList<Integer>();
+
+    @Column
     @SerializedName("original_title")
     @Expose
-    private String originalTitle;
+    public String originalTitle;
+
+    @Column
     @SerializedName("original_language")
     @Expose
-    private String originalLanguage;
+    public String originalLanguage;
+
+    @Column
     @SerializedName("title")
     @Expose
-    private String title;
+    public String title;
+
+    @Column
     @SerializedName("backdrop_path")
     @Expose
-    private String backdropPath;
+    public String backdropPath;
+
+    @Column
     @SerializedName("popularity")
     @Expose
-    private Double popularity;
+    public Double popularity;
+
+    @Column
     @SerializedName("vote_count")
     @Expose
-    private Integer voteCount;
+    public Integer voteCount;
+
+    @Column
     @SerializedName("video")
     @Expose
-    private Boolean video;
+    public Boolean video;
+
+    @Column
     @SerializedName("vote_average")
     @Expose
-    private Double voteAverage;
+    public Double voteAverage;
 
     /**
      * No args constructor for use in serialization

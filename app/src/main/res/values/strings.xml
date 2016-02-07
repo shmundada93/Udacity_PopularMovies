@@ -7,7 +7,9 @@
     <string name="pref_sort_label">Sort By</string>
     <string name="pref_sort_label_rated">Highest rated</string>
     <string name="pref_sort_label_popular">Most popular</string>
+    <string name="pref_sort_label_favorites">Favorites</string>
     <string name="pref_sort_popular" translatable="false">popularity.desc</string>
     <string name="pref_sort_rated" translatable="false">vote_average.desc</string>
+    <string name="pref_sort_fav" translatable="false">favs</string>
     <string name="action_settings" translatable="false">Settings</string>
 </resources>

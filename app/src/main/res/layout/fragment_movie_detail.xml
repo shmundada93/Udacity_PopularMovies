@@ -1,5 +1,9 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <LinearLayout
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical">
@@ -10,49 +14,105 @@
         android:text="Ant-Man"
         android:textSize="32sp"
         android:gravity="center"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:textStyle="bold"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="240dp"
             android:padding="16dp"
             android:layout_weight="1"
             android:id="@+id/movie_detail_image"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitCenter"/>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="24dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/movie_release_date"
-                android:text="2015-07-19"
-                android:padding="8dp"/>
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/movie_release_date"
+                    android:text="2015"
+                    android:padding="8dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_vote_avg"
                 android:text="8.1"
-                android:padding="8dp"/>
-
+                android:paddingLeft="8dp"
+                android:textSize="32sp"
+                android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="/10"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/ic_favorite_outline_red_500_48dp"
+                android:background="@android:color/transparent"
+                android:id="@+id/fav_button"/>
         </LinearLayout>
     </LinearLayout>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Synopsis:"
+        android:text="Synopsis"
         android:padding="16dp"
-        android:textSize="16sp"/>
+        android:textSize="24sp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/movie_synopsis"
-        android:textSize="14sp"
+        android:textSize="16sp"
+        android:text="hjvawjvhj"
         android:padding="16dp"/>
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Watch Trailers"
+        android:padding="16dp"
+        android:textSize="24sp"/>
+    <com.example.www.popularmovies.UI.NonScrollListView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/trailerList"
+        android:padding="16dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reviews"
+        android:padding="16dp"
+        android:textSize="24sp"/>
+    <com.example.www.popularmovies.UI.NonScrollListView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/reviewList"
+        android:padding="16dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
 </LinearLayout>
+</ScrollView>
